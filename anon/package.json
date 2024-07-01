@@ -1,6 +1,6 @@
 {
   "name": "@pkmn/anon",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "Logic for anonymizing Pokémon Showdown battle simulator logs",
   "repository": "github:pkmn/stats",
   "license": "MIT",
@@ -16,11 +16,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@pkmn/data": "^0.9.5",
+    "@pkmn/data": "^0.9.8",
     "@pkmn/protocol": "^0.6.25"
   },
   "devDependencies": {
-    "@pkmn/dex": "^0.9.5"
+    "@pkmn/dex": "^0.9.8"
   },
   "scripts": {
     "lint": "eslint --cache src --ext ts",
@@ -43,25 +43,13 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "node_modules/",
-      "dist/"
-    ],
-    "modulePathIgnorePatterns": [
-      "fixtures/"
-    ]
+    "testPathIgnorePatterns": ["node_modules/", "dist/"],
+    "modulePathIgnorePatterns": ["fixtures/"]
   },
   "babel": {
     "presets": [
-      "@babel/preset-typescript",
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ]
+        "@babel/preset-typescript",
+        ["@babel/preset-env", {"targets": {"node": "current"}}]
     ]
   },
   "eslintConfig": {
