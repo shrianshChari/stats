@@ -10,10 +10,12 @@ try {
 const fs = require('fs/promises');
 const path = require('path');
 
-const stats = require('./build');
 const {Dex, toID} = require('@pkmn/dex');
-const gens = stats.newGenerations(Dex);
 const stringify = require('json-stringify-pretty-compact');
+
+const stats = require('./build');
+
+const gens = stats.newGenerations(Dex);
 
 const MONTH = /^\d{4}-\d{2}$/;
 const UNSUPPORTED = ['1v1', 'challengecup1vs1'];
@@ -70,8 +72,7 @@ async function convert(month, out, split) {
   for (const file of await fs.readdir(month)) {
     if (!file.endsWith('txt')) continue;
     const base = file.slice(0, -4); // .txt
-    if (MISSING[path.basename(month)]?.includes(base)) continue; // sigh
-    const [format, cutoff] = base.split('-')
+    const [format, cutoff] = base.split('-');
     try {
       await fs.mkdir(path.join(out, format), {mode: 0o755});
     } catch (err) {
@@ -117,7 +118,8 @@ async function write(out, gen, dir, base, split) {
       // NOTE: deliberately limiting concurrency to avoid opening too many files
       await fs.writeFile(
         path.join(out, `${toID(pokemon)}.json`),
-        JSON.stringify(display.pokemon[pokemon]));
+        JSON.stringify(display.pokemon[pokemon]),
+      );
     }
   } else {
     return fs.writeFile(`${out}.json`, stringify(display));
