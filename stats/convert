@@ -92,7 +92,7 @@ async function convert(month, out, split) {
 
 async function write(out, gen, dir, base, split) {
   const format = base.slice(0, base.lastIndexOf('-'));
-  const leads = !stats.isNonSinglesFormat(format) && !UNSUPPORTED.includes(format);
+  const leads = !stats.isNonSinglesFormat(format, false) && !UNSUPPORTED.includes(format);
   const metagame = !UNSUPPORTED.includes(format);
 
   const display = stats.Display.fromReports(gen,

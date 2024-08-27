@@ -117,7 +117,7 @@ export const Parser = new class {
       if (winner !== 'tie') player.outcome = winner === side ? 'win' : 'loss';
       battle[side] = player;
     }
-    if (!raw.log || util.isNonSinglesFormat(format)) return battle;
+    if (!raw.log || util.isNonSinglesFormat(format, legacy)) return battle;
 
     const emptyFlags = () => ({
       roar: false,

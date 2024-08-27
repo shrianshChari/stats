@@ -106,40 +106,164 @@ export function revertFormes(gen: Generation, id: ID, legacy: boolean) {
   return getBaseSpecies(gen, species.id, legacy).id;
 }
 
-// FIXME: Generate this based on gameType from config/formats.js
-const NON_SINGLES_FORMATS = new Set([
-  'battlespotdoubles', 'battlespotspecial7', 'battlespottriples', 'doublesou', 'doublesubers',
-  'doublesuu', 'gen5doublesou', 'gen5smogondoubles', 'gen7battlespotdoubles',
-  'gen7doublesanythinggoes', 'gen7doublesanythinggoesbeta', 'gen7doublesou', 'gen7doublesoubeta',
-  'gen7pokebankdoubleaanythinggoes', 'gen7pokebankdoublesag', 'gen7pokebankdoublesanythinggoes',
-  'gen7pokebankdoublesou', 'gen7pokebankdoublesoubeta', 'gen7randomdoublesbattle',
-  'gen7vgc2017', 'gen7vgc2017beta', 'orassmogondoubles', 'randomdoublesbattle', 'smogondoublesuu',
-  'randomtriplesbattle', 'smogondoubles', 'smogondoublesubers', 'smogontriples', 'smogontriples',
-  'gen8doublesou', 'gen8doublesubers', 'gen8doublesuu', 'vgc2014', 'vgc2015', 'vgc2016',
-  'gen6vgc2016', 'gen7vgc2017', 'gen7vgc2018', 'gen7vgc2019', 'gen7vgc2019sunseries',
-  'gen7vgc2019moonseries', 'gen7vgc2019ultraseries', 'gen8vgc2020', 'gen8vgc2021',
-  'gen8vgc2021series9', 'gen8vgc2021series9limitonerestrictedrestrictedlegendary', 'gen8vgc2022',
-  // TODO: add gen9 formats
+const NON_SINGLES_FORMATS_LEGACY = new Set([
+  'battlespotdoubles',
+  'battlespotspecial7',
+  'battlespottriples',
+  'gen5doublesou',
+  'gen5smogondoubles',
+  'gen7battlespotdoubles',
+  'gen7doublesanythinggoes',
+  'gen7doublesanythinggoesbeta',
+  'gen7doublesou',
+  'gen7doublesoubeta',
+  'gen7pokebankdoublesag',
+  'gen7pokebankdoublesanythinggoes',
+  'gen7pokebankdoublesou',
+  'gen7pokebankdoublesoubeta',
+  'gen7randomdoublesbattle',
+  'gen7vgc2017',
+  'gen7vgc2017beta',
+  'gen7vgc2018',
+  'gen7vgc2019',
+  'gen8doublesou',
+  'gen8doublesubers',
+  'gen8doublesuu',
+  'gen8vgc2020',
+  'gen8vgc2021',
+  'gen8vgc2022',
+  'orassmogondoubles',
+  'randomdoublesbattle',
+  'randomtriplesbattle',
+  'smogondoubles',
+  'smogondoublessuspecttest',
+  'smogondoublesubers',
+  'smogondoublesuu',
+  'smogontriples',
+  'vgc2014',
+  'vgc2015',
+  'vgc2016',
+  'vgc2017',
 ]);
 
-export function isNonSinglesFormat(format: ID) {
-  return NON_SINGLES_FORMATS.has(format.endsWith('suspecttest') ? format.slice(0, -11) : format);
+const NON_SINGLES_FORMATS = new Set([
+  ...NON_SINGLES_FORMATS_LEGACY,
+  // old
+  'doublesou',
+  'doublesubers',
+  'doublesuu',
+  'gen6vgc2016',
+  'gen7vgc2019sunseries',
+  'gen7vgc2019moonseries',
+  'gen7vgc2019ultraseries',
+  'gen8vgc2021series9',
+  'gen8vgc2021series9limitonerestrictedrestrictedlegendary',
+  // format.gameType !== 'singles' && !format.id.endsWith('customgame') && !format.team
+  'gen3doublesou',
+  'gen4doublesou',
+  'gen4vgc2010',
+  'gen5vgc2013',
+  'gen6battlespotdoubles',
+  'gen6battlespottriples',
+  'gen6doublesou',
+  'gen6vgc2015',
+  'gen7doublesuu',
+  'gen92v2doubles',
+  'gen9doubleslc',
+  'gen9doublesou',
+  'gen9doublesubers',
+  'gen9doublesuu',
+  'gen9freeforall',
+  'gen9nationaldexdoubles',
+  'gen9triples',
+  'gen9vgc2024regg',
+  'gen9vgc2024reggbo3',
+  'gen9vgc2024regh',
+  'gen9vgc2024reghbo3',
+]);
+
+// Note: Generations doesn't have the concept of "format", so looking up a formats's `gameType` as
+// one might expect to be able to do with a Dex doesn't work. Furthermore, formats are configurable
+// and change over time -- many of these formats are no longer present in Pokémon Showdown's
+// canonical config/formats.ts data
+export function isNonSinglesFormat(format: ID, legacy: boolean) {
+  if (format.endsWith('suspecttest')) format = format.slice(0, -11) as ID;
+  return (legacy ? NON_SINGLES_FORMATS_LEGACY : NON_SINGLES_FORMATS).has(format);
 }
 
-// FIXME: Generate this based on teamLength from config/formats.js
-const NON_6V6_FORMATS = new Set([
-  '1v1', 'battlespotdoubles', 'battlespotsingles', 'battlespotspecial7', 'challengecup1v1',
-  'gen5gbusingles', 'gen71v1', 'gen7alolafriendly', 'gen7battlespotdoubles', 'gen81v1',
-  'gen7battlespotsingles', 'gen7challengecup1v1', 'gen7vgc2017', 'gen7vgc2017beta', 'pgllittlecup',
-  'vgc2014', 'vgc2015', 'vgc2016', 'gen6vgc2016', 'gen7vgc2017', 'gen7vgc2018', 'gen7vgc2019',
-  'gen7vgc2019sunseries', 'gen7vgc2019moonseries', 'fen7vgc2019ultraseries', 'gen8vgc2020',
-  'gen8vgc2021', 'gen8vgc2021series9', 'gen8vgc2021series9limitonerestrictedrestrictedlegendary',
-  'gen8vgc2022', 'gen8firstblood', 'gen8tagteamsingles',
-  // TODO: add gen9 formats
+const NON_6V6_FORMATS_LEGACY = new Set([
+  'battlespotdoubles',
+  'battlespotsingles',
+  'battlespotspecial7',
+  'challengecup1v1',
+  'gen5gbusingles',
+  'gen71v1',
+  'gen7alolafriendly',
+  'gen7battlespotdoubles',
+  'gen7battlespotsingles',
+  'gen7challengecup1v1',
+  'gen7vgc2017',
+  'gen7vgc2017beta',
+  'gen81v1',
+  'gen8firstblood',
+  'gen8tagteamsingles',
+  'gen91v1',
+  'pgllittlecup',
+  'vgc2014',
+  'vgc2015',
+  'vgc2016',
+  'vgc2017',
 ]);
 
-export function isNon6v6Format(format: ID) {
-  return NON_6V6_FORMATS.has(format.endsWith('suspecttest') ? format.slice(0, -11) : format);
+const NON_6V6_FORMATS = new Set([
+  ...NON_6V6_FORMATS_LEGACY,
+  // old
+  '1v1',
+  'gen5gbusingles',
+  'gen6vgc2016',
+  'gen7vgc2018',
+  'gen7vgc2019',
+  'gen7vgc2019moonseries',
+  'gen7vgc2019sunseries',
+  'gen7vgc2019ultraseries',
+  'gen8firstblood',
+  'gen8tagteamsingles',
+  'gen8vgc2020',
+  'gen8vgc2021',
+  'gen8vgc2021series9',
+  'gen8vgc2021series9limitonerestrictedrestrictedlegendary',
+  'gen8vgc2022',
+  // format.teamLength !== 'singles' && Dex.formats.getRuleTable(format).pickedTeamSize < 6
+  'gen9bssregg',
+  'gen9bssregh',
+  'gen9vgc2024regg',
+  'gen9vgc2024reggbo3',
+  'gen9vgc2024regh',
+  'gen9vgc2024reghbo3',
+  'gen92v2doubles',
+  'gen9bssfactory',
+  'gen9challengecup1v1',
+  'gen9challengecup2v2',
+  'gen8bssfactory',
+  'gen8cap1v1',
+  'gen7bssfactory',
+  'gen8battlestadiumsingles',
+  'gen61v1',
+  'gen6battlespotsingles',
+  'gen6vgc2015',
+  'gen6battlespotdoubles',
+  'gen51v1',
+  'gen5vgc2013',
+  'gen41v1',
+  'gen31v1',
+  'gen21v1',
+  'gen11v1',
+]);
+
+// See comment above regarding why we can't just rely on a format's `pickedTeamSize` to compute this
+export function isNon6v6Format(format: ID, legacy: boolean) {
+  if (format.endsWith('suspecttest')) format = format.slice(0, -11) as ID;
+  return (legacy ? NON_6V6_FORMATS_LEGACY : NON_6V6_FORMATS).has(format);
 }
 
 export function canonicalizeFormat(format: ID) {
