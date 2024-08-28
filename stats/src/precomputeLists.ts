@@ -39,12 +39,12 @@ export function produceLesserSetupMoves(gen: GenerationNum) {
   const ALL_MOVES = Dex.forGen(gen).moves.all().filter((move) => move.gen <= gen);
   return new Set([
     // Moves that only boost attacking stats by one stage
-    ...ALL_MOVES.filter((move) => move.boosts &&
+    ...ALL_MOVES.filter((move) => doesntTargetFoes(move) && move.boosts &&
       (
         (move.boosts.atk && move.boosts.atk == 1) ||
         (move.boosts.spa && move.boosts.spa == 1)
       )
-      && !move.boosts.spe && move.target !== 'normal' && move.id !== 'growth'
+      && !move.boosts.spe && move.id !== 'growth'
     ).map((move) => move.id),
     // Weaker attacking moves that boost stats
     ...ALL_MOVES.filter((move) => move.basePower > 0 && move.basePower < 80 &&
@@ -54,7 +54,7 @@ export function produceLesserSetupMoves(gen: GenerationNum) {
     ...ALL_MOVES.filter((move) => doesntTargetFoes(move) &&
       move.boosts && move.boosts.spe && !move.boosts.atk && !move.boosts.spa).map((move) => move.id),
     // Moves that boost evasion
-    ...ALL_MOVES.filter((move) => !['normal', 'adjacentFoe', 'allAdjacentFoes', 'foeSide'].includes(move.target) && move.boosts && move.boosts.evasion).map((move) => move.id),
+    ...ALL_MOVES.filter((move) => doesntTargetFoes(move) && move.boosts && move.boosts.evasion).map((move) => move.id),
     // These moves in particular
     ...(gen >= 6 ? ['rototiller'] : []),
     ...(gen >= 4 ? ['acupressure', 'tailwind'] as ID[] : []),
