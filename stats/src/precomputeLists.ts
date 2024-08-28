@@ -95,3 +95,11 @@ export function produceGravityBenefittingMoves(gen: GenerationNum) {
     ...(gen >= 2 ? ['spikes'] as ID[] : []),
   ]);
 }
+
+export function produceProtectionMoves(gen: GenerationNum) {
+  const ALL_MOVES = Dex.forGen(gen).moves.all().filter((move) => move.gen <= gen);
+
+  return new Set(
+    ALL_MOVES.filter((move) => move.stallingMove).map((move) => move.id)
+  );
+}

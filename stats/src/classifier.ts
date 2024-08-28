@@ -1,7 +1,7 @@
 import {Generation, ID, PokemonSet, StatID, TypeName, toID} from '@pkmn/data';
 
 import * as util from './util';
-import { produceBatonPassableMoves, produceDragons, produceGravityBenefittingMoves, produceGreatSetupMoves, produceLesserSetupMoves } from './precomputeLists';
+import { produceBatonPassableMoves, produceDragons, produceGravityBenefittingMoves, produceGreatSetupMoves, produceLesserSetupMoves, produceProtectionMoves } from './precomputeLists';
 
 // TODO: Where does this constant come from? (ie. rename!)
 const LOG3_LOG2 = Math.log(3) / Math.log(2);
@@ -79,6 +79,7 @@ export const Classifier = new class {
         lesserSetupMoves: produceLesserSetupMoves(gen.num),
         batonPassableMoves: produceBatonPassableMoves(gen.num),
         gravityBenefittingMoves: produceGravityBenefittingMoves(gen.num),
+        protectionMoves: produceProtectionMoves(gen.num),
       }
     }
 
