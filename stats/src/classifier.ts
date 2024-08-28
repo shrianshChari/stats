@@ -1,11 +1,14 @@
 import {Generation, ID, PokemonSet, StatID, TypeName, toID} from '@pkmn/data';
 
 import * as util from './util';
+import { produceBatonPassableMoves, produceDragons, produceGravityBenefittingMoves, produceGreatSetupMoves, produceLesserSetupMoves } from './precomputeLists';
 
 // TODO: Where does this constant come from? (ie. rename!)
 const LOG3_LOG2 = Math.log(3) / Math.log(2);
 
 export const Classifier = new class {
+  caches: {[gen: number]: {[name: string]: Set<string>}} = {}
+
   classifyTeam(gen: Generation, team: Array<PokemonSet<ID>>, legacy = false) {
     let teamBias = 0;
     const teamStalliness = [];
@@ -66,6 +69,20 @@ export const Classifier = new class {
     pokemon.ability = originalAbility;
 
     return {bias, stalliness};
+  }
+
+  getOrCreateCache(gen: Generation) {
+    if (!(gen.num in this.caches)) {
+      this.caches[gen.num] = {
+        dragons: produceDragons(gen.num),
+        greatSetupMoves: produceGreatSetupMoves(gen.num),
+        lesserSetupMoves: produceLesserSetupMoves(gen.num),
+        batonPassableMoves: produceBatonPassableMoves(gen.num),
+        gravityBenefittingMoves: produceGravityBenefittingMoves(gen.num),
+      }
+    }
+
+    return this.caches[gen.num];
   }
 };
 
