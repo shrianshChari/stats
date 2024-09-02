@@ -442,13 +442,13 @@ function partialParseMovesetReport(report: string) {
       i = 0;
       continue;
     }
-    if (section % 9 === 1) {
+    if (section % 10 === 1) {
       species = line.slice(3, line.indexOf('  '));
     }
-    if (section % 9 === 2 && i === 2) {
+    if (section % 10 === 2 && i === 2) {
       movesets[species] = {weight: Number(line.slice(17, line.indexOf(' ', 17))), outcomes: {}};
     }
-    if (section % 9 === 8 && i >= 2) {
+    if (section % 10 === 9 && i >= 2) {
       if (i % 2 === 0) {
         s = SPECIES.exec(line)![1];
       } else {
