@@ -522,6 +522,7 @@ export const GREATER_SETUP_MOVES = new Set([
 // https://pokemetrics.wordpress.com/2012/09/13/revisions-revisions/
 export function computeGreaterSetupMoves(gen: Generation) {
   const moves = Array.from(gen.moves);
+
   // Moves that either boost an attacking stat by multiple stages
   // or boosts Speed and an attacking stat
   const multiple = moves.filter(m => m.boosts && !targetsFoes(m) && (
@@ -535,6 +536,7 @@ export function computeGreaterSetupMoves(gen: Generation) {
   // likelihood of boosting (at least 50%)
   const attacking = moves .filter(m => m.basePower >= 80 && m.secondary?.self?.boosts &&
       m.secondary?.chance && m.secondary?.chance >= 50).map(m => m.id);
+
   return new Set([...multiple, ...attacking,
     // Due to implementation details, Tidy Up gets excluded from 'multiple'
     ...(gen.num >= 9 ? ['tidyup'] : []) as ID[],
@@ -584,12 +586,14 @@ export const SETUP_MOVES = new Set([
 
 export function computeBatonPassMoves(gen: Generation) {
   const moves = Array.from(gen.moves);
+
   // Any move that boosts your own stats
   const self = moves.filter(m => m.boosts &&
     (['self', 'adjacentAllyOrSelf', 'allies'].includes(m.target))).map(m => m.id);
   // Any attacking move that can increase your own stats
   const attacking = moves.filter(m => m.basePower > 0 && m.secondary?.self?.boosts &&
       m.secondary?.chance && m.secondary?.chance >= 50).map(m => m.id);
+
   return new Set([...self, ...attacking,
     // Other moves that have effects that can be Baton Passed
     ...(gen.num >= 4 ? ['acupressure'] as ID[] : []),
@@ -611,12 +615,14 @@ export const GRAVITY_MOVES = new Set([
 
 export function computeGravityMoves(gen: Generation) {
   const moves = Array.from(gen.moves);
+
   // Moves that have 80% accuracy or worse
   const accuracy = moves.filter(m => ['normal', 'allAdjacentFoes', 'any'].includes(m.target) &&
     m.accuracy !== true && m.accuracy > 0 && m.accuracy <= 80).map(m => m.id);
   // Ground-type moves
   const ground = moves.filter(m => m.type === 'Ground' &&
       m.id !== 'hiddenpower' && m.target !== 'all').map(m => m.id);
+
   return new Set([...accuracy, ...ground,
     // Grounded hazards
     ...(gen.num >= 6 ? ['stickyweb'] as ID[] : []),
@@ -638,11 +644,7 @@ export function computeRecoveryMoves(gen: Generation) {
     .filter(m => m.flags.heal && !m.selfdestruct && (m.target === 'self' || m.target === 'allies'))
     .map(m => m.id);
 
-  return new Set([
-    ...healing,
-    ...(gen.num >= 4 ? ['aquaring'] as ID[] : []),
-    'leechseed' as ID,
-  ]);
+  return new Set([...healing, ...(gen.num >= 4 ? ['aquaring'] as ID[] : []), 'leechseed' as ID]);
 }
 
 export const PROTECT_MOVES = new Set([
@@ -650,23 +652,15 @@ export const PROTECT_MOVES = new Set([
 ] as ID[]);
 
 export function computeProtectionMoves(gen: Generation) {
-  const moves = Array.from(gen.moves);
-
-  return new Set(
-    moves
-      .filter(m => m.stallingMove && !['endure', 'quickguard', 'wideguard'].includes(m.id))
-      .map(m => m.id)
-  );
+  return new Set(Array.from(gen.moves)
+    .filter(m => m.stallingMove && !['endure', 'quickguard', 'wideguard'].includes(m.id))
+    .map(m => m.id));
 }
 
 export const PHAZING_MOVES = new Set(['whirlwind', 'roar', 'circlethrow', 'dragontail'] as ID[]);
 
 export function computePhazingMoves(gen: Generation) {
-  const moves = Array.from(gen.moves);
-
-  return new Set(
-    moves.filter(m => m.forceSwitch).map(m => m.id)
-  );
+  return new Set(Array.from(gen.moves).filter(m => m.forceSwitch).map(m => m.id));
 }
 
 export const PARALYSIS_MOVES = new Set(['thunderwave', 'stunspore', 'glare', 'nuzzle'] as ID[]);
@@ -676,15 +670,11 @@ export function computeParalysisMoves(gen: Generation) {
 
   // Non-damaging moves that induce paralysis
   const paralysisMoves = moves.filter(m => m.status === 'par').map(m => m.id);
-
   // Attacking moves that are guaranteed to induce paralysis
   const paralysisAttacks = moves.filter(m => m.secondary && m.secondary.status === 'par' &&
     m.secondary.chance === 100 && m.accuracy === 100).map(m => m.id);
 
-  return new Set([
-    ...paralysisMoves,
-    ...paralysisAttacks,
-  ]);
+  return new Set([...paralysisMoves, ...paralysisAttacks]);
 }
 
 export const CONFUSION_MOVES = new Set([
@@ -696,15 +686,12 @@ export function computeConfusionMoves(gen: Generation) {
 
   // Non-damaging moves that induce confusion
   const confusionMoves = moves.filter(m => m.volatileStatus === 'confusion').map(m => m.id);
-
   // Attacking moves that are guaranteed to induce confusion
   const confusionAttacks = moves.filter(m => m.secondary &&
     m.secondary.volatileStatus === 'confusion' && m.secondary.chance === 100 &&
     m.accuracy === 100).map(m => m.id);
 
-  return new Set([
-    ...confusionMoves,
-    ...confusionAttacks,
+  return new Set([...confusionMoves, ...confusionAttacks,
     // Yawn is treated as a confusion move
     ...(gen.num >= 3 ? ['yawn'] as ID[] : []),
   ]);
@@ -719,25 +706,17 @@ export function computeSleepMoves(gen: Generation) {
 
   // Non-damaging moves that induce sleep
   const sleepMoves = moves.filter(m => m.status === 'slp').map(m => m.id);
-
   // Attacking moves that are guaranteed to induce sleep
   const sleepAttacks = moves.filter(m => m.secondary && m.secondary.status === 'slp' &&
     m.secondary.chance === 100 && m.accuracy === 100).map(m => m.id);
 
-  return new Set([
-    ...sleepMoves,
-    ...sleepAttacks,
-  ]);
+  return new Set([...sleepMoves, ...sleepAttacks]);
 }
 
 export const OHKO_MOVES = new Set(['guillotine', 'fissure', 'sheercold'] as ID[]);
 
 export function computeOHKOMoves(gen: Generation) {
-  const moves = Array.from(gen.moves);
-
-  return new Set(
-    moves.filter(m => m.ohko).map(m => m.id)
-  );
+  return new Set(Array.from(gen.moves).filter(m => m.ohko).map(m => m.id));
 }
 
 export const GREATER_OFFENSIVE_MOVES = new Set([
@@ -746,12 +725,7 @@ export const GREATER_OFFENSIVE_MOVES = new Set([
 ] as ID[]);
 
 export function computeGreaterOffensiveMoves(gen: Generation) {
-  const moves = Array.from(gen.moves);
-
-  const selfKOMoves = moves.filter(m => m.selfdestruct).map(m => m.id);
-
-  return new Set([
-    ...selfKOMoves,
+  return new Set([...Array.from(gen.moves).filter(m => m.selfdestruct).map(m => m.id),
     // These are moves that also deal with the user getting KOed
     ...(gen.num >= 2 ? ['destinybond', 'perishsong'] as ID[] : []),
   ]);
@@ -781,12 +755,7 @@ export function computeLesserOffensiveMoves(gen: Generation) {
       (m.self.boosts.spa && m.self.boosts.spa < 0) ||
       (m.self.boosts.spe && m.self.boosts.spe < 0))).map(m => m.id);
 
-  return new Set([
-    ...recoil,
-    ...crashDamage,
-    ...lockedMove,
-    ...dropDefenses,
-  ]);
+  return new Set([...recoil, ...crashDamage, ...lockedMove, ...dropDefenses]);
 }
 
 function targetsFoes(move: Move) {
