@@ -55,7 +55,9 @@ const TIERS = {
     'Uber', 'OU', 'UUBL', 'UU', 'RUBL', 'RU', 'NUBL', 'NU', 'PUBL', 'PU', 'ZUBL', 'ZU',
   ] as Tier[],
   doubles: ['DUber', 'DOU', 'DUU', 'DNU'] as DoublesTier[],
-  nationaldex: ['OU', 'UUBL', 'UU'] as NationalDexTier[],
+  nationaldex: [
+    'Uber', 'OU', 'UUBL', 'UU', 'RUBL', 'RU', 'NUBL', 'NU', 'PUBL', 'PU', 'ZUBL', 'ZU',
+  ] as NationalDexTier[],
   littlecup: ['LC', 'LCBL', 'LCUU'] as LittleCupTier[],
 };
 
@@ -420,12 +422,7 @@ export const Reports = new class {
       }
     }
 
-    const tiers:
-    UsageTiers<Array<[ID, number]>> |
-    DoublesUsageTiers<Array<[ID, number]>> |
-    NationalDexUsageTiers<Array<[ID, number]>> |
-    LittleCupUsageTiers<Array<[ID, number]>> = usageTiers(type, () => []);
-
+    const tiers: CombinedUsageTiers<Array<[ID, number]>> = usageTiers(type, () => []);
     for (const [species, usage] of pokemon.entries()) {
       for (const tier of USAGE_TIERS[type]) {
         const ut: number = (usage as any)[tier];
@@ -533,15 +530,12 @@ function updateTiers(
   const NFE = new Set<ID>();
   for (const species of gen.species) {
     const doubles = type === 'doubles';
-    // let tier: string = (doubles
-    //   ? species.doublesTier : type === 'nationaldex'
-    //   ? species.natDexTier : undefined) ?? species.tier;
     let tier: string = (doubles
       ? species.doublesTier : type === 'nationaldex'
-        ? undefined : undefined) ?? species.tier;
+        ? species.natDexTier : undefined) ?? species.tier;
 
     if (SKIP.has(species.id) ||
-      species.isNonstandard ||
+      (type !== 'nationaldex' && species.isNonstandard) ||
       !tier ||
       tier === 'Illegal' ||
       tier === 'Unreleased') {
@@ -572,6 +566,7 @@ function updateTiers(
       updated.set(species.id, tier as CombinedTier);
       continue;
     }
+
     if (updated.has(species.id)) continue;
 
     const riseAndDrop =
@@ -710,7 +705,7 @@ function toMovesetStatistics(
   return movesets;
 }
 
-// NOTE: https://www.smogon.com/forums/threads/gen-8-smogon-university-usage-statistics-discussion-thread.3657197/post-8841061
+// NOTE: https://www.smogon.com/forums/posts/8841061
 function getTeammates(
   gen: Generation,
   teammates: {[id: string /* ID */]: number},
